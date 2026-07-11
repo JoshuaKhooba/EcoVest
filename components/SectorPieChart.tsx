@@ -1,6 +1,7 @@
 "use client";
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { useState } from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import IconChip from "./IconChip";
 import { PieChartIcon } from "./Icons";
 
@@ -27,11 +28,11 @@ interface SectorPieChartProps {
 }
 
 export default function SectorPieChart({ title, data }: SectorPieChartProps) {
+  const [hovered, setHovered] = useState<{ name: string; value: number } | null>(null);
+
   const chartData = data
     .map((d) => ({ name: d.sector, value: Math.round(d.weight * 1000) / 10 }))
     .sort((a, b) => b.value - a.value); // largest sector first, consistent ordering
-
-  const total = chartData.reduce((sum, d) => sum + d.value, 0);
 
   return (
     <div className="card h-full">
@@ -57,6 +58,8 @@ export default function SectorPieChart({ title, data }: SectorPieChartProps) {
                 cornerRadius={4}
                 startAngle={90}
                 endAngle={-270}
+                onMouseEnter={(_, idx) => setHovered(chartData[idx])}
+                onMouseLeave={() => setHovered(null)}
               >
                 {chartData.map((entry, idx) => (
                   <Cell
@@ -64,15 +67,29 @@ export default function SectorPieChart({ title, data }: SectorPieChartProps) {
                     fill={SECTOR_COLORS[entry.name] ?? FALLBACK_COLOR}
                     stroke="#fff"
                     strokeWidth={2}
+                    style={{
+                      opacity: hovered && hovered.name !== entry.name ? 0.45 : 1,
+                      transition: "opacity 120ms",
+                    }}
                   />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `${value}%`} />
             </PieChart>
           </ResponsiveContainer>
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl font-bold text-navy-900">{chartData.length}</span>
-            <span className="text-[11px] text-slate-500">sectors</span>
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+            {hovered ? (
+              <>
+                <span className="line-clamp-2 text-xs font-semibold leading-tight text-navy-900">
+                  {hovered.name}
+                </span>
+                <span className="text-lg font-bold text-navy-900">{hovered.value}%</span>
+              </>
+            ) : (
+              <>
+                <span className="text-xl font-bold text-navy-900">{chartData.length}</span>
+                <span className="text-[11px] text-slate-500">sectors</span>
+              </>
+            )}
           </div>
         </div>
 

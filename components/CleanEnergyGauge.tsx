@@ -2,7 +2,7 @@
 
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from "recharts";
 import IconChip from "./IconChip";
-import { GaugeIcon } from "./Icons";
+import { GaugeIcon, LeafIcon, ArrowRightIcon } from "./Icons";
 
 function scoreColor(score: number): string {
   if (score >= 7.5) return "#22945c";
@@ -16,7 +16,8 @@ interface GaugeProps {
 }
 
 function Gauge({ label, score }: GaugeProps) {
-  const data = [{ name: "score", value: score, fill: scoreColor(score) }];
+  const color = scoreColor(score);
+  const data = [{ name: "score", value: score, fill: color }];
 
   return (
     <div className="flex flex-col items-center">
@@ -25,20 +26,25 @@ function Gauge({ label, score }: GaugeProps) {
           <RadialBarChart
             cx="50%"
             cy="90%"
-            innerRadius="70%"
-            outerRadius="100%"
-            barSize={16}
+            innerRadius="76%"
+            outerRadius="98%"
+            barSize={11}
             data={data}
             startAngle={180}
             endAngle={0}
           >
             <PolarAngleAxis type="number" domain={[0, 10]} tick={false} />
-            <RadialBar background dataKey="value" cornerRadius={8} />
+            <RadialBar background={{ fill: "#eef1f5" }} dataKey="value" cornerRadius={6} />
           </RadialBarChart>
         </ResponsiveContainer>
       </div>
-      <div className="-mt-10 text-2xl font-bold text-navy-900">{score.toFixed(1)}</div>
-      <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+      <div className="-mt-7 flex items-baseline justify-center gap-0.5">
+        <span className="text-xl font-bold leading-none" style={{ color }}>
+          {score.toFixed(1)}
+        </span>
+        <span className="text-[10px] font-medium text-slate-400">/10</span>
+      </div>
+      <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </div>
     </div>
@@ -55,29 +61,36 @@ export default function CleanEnergyGauge({
   suggestedScore,
 }: CleanEnergyGaugeProps) {
   const delta = suggestedScore - originalScore;
+  const isPositive = delta >= 0;
 
   return (
     <div className="card h-full">
       <div className="mb-1 flex items-center gap-2">
-        <IconChip icon={<GaugeIcon className="h-4 w-4" />} color="green" size="sm" />
-        <h3 className="text-sm font-semibold text-navy-900">
-          Clean-Energy Tilt Score
-        </h3>
+        <IconChip icon={<LeafIcon className="h-4 w-4" />} color="green" size="sm" />
+        <h3 className="text-sm font-semibold text-navy-900">Clean-Energy Tilt Score</h3>
       </div>
       <p className="mb-2 text-xs text-slate-500">
         Weighted average ESG / clean-energy alignment, scale 1–10
       </p>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="relative grid grid-cols-2 gap-2">
         <Gauge label="Current" score={originalScore} />
-        <Gauge label="Suggested" score={suggestedScore} />
-      </div>
-      <div className="mt-1 text-center">
-        <span
-          className={`badge ${
-            delta >= 0 ? "bg-forest-500/10 text-forest-600" : "bg-red-50 text-red-600"
+        <div
+          className={`pointer-events-none absolute left-1/2 top-9 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white shadow-sm ${
+            isPositive ? "bg-forest-500 text-white" : "bg-red-500 text-white"
           }`}
         >
-          {delta >= 0 ? "+" : ""}
+          <ArrowRightIcon className="h-3.5 w-3.5" />
+        </div>
+        <Gauge label="Suggested" score={suggestedScore} />
+      </div>
+      <div className="mt-1 flex justify-center">
+        <span
+          className={`badge gap-1.5 ${
+            isPositive ? "bg-forest-500/10 text-forest-600" : "bg-red-50 text-red-600"
+          }`}
+        >
+          <GaugeIcon className="h-3.5 w-3.5" />
+          {isPositive ? "+" : ""}
           {delta.toFixed(1)} pts clean-energy tilt
         </span>
       </div>

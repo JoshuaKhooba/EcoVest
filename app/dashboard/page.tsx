@@ -196,7 +196,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="mb-6 grid gap-6 lg:grid-cols-4">
+        <div className="mb-6 grid gap-6 lg:grid-cols-2">
           <div className="lift-hover animate-fade-in-up" style={{ animationDelay: "60ms" }}>
             <SectorPieChart
               title="Sector Breakdown — Current"
@@ -209,6 +209,9 @@ export default function DashboardPage() {
               data={reallocation.suggestedMetrics.sectorBreakdown}
             />
           </div>
+        </div>
+
+        <div className="mb-6 grid gap-6 lg:grid-cols-2">
           <div className="lift-hover animate-fade-in-up" style={{ animationDelay: "140ms" }}>
             <CleanEnergyGauge
               originalScore={reallocation.originalMetrics.esgScore}
