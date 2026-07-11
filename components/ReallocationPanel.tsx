@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Holding, ReallocationMove } from "@/lib/types";
 import IconChip from "./IconChip";
+import StockSparkline from "./StockSparkline";
 import { ArrowsShuffleIcon } from "./Icons";
 
 interface ReallocationPanelProps {
@@ -52,10 +54,11 @@ export default function ReallocationPanel({
           " \"Apply Reallocation\" executes the trades below against your simulated account."}
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-sm">
+        <table className="w-full min-w-[680px] text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
-              <th className="py-2 pr-3">Holding</th>
+              <th className="py-2 pr-1">Holding</th>
+              <th className="py-2 pr-3">Trend</th>
               <th className="py-2 pr-3">Sector</th>
               <th className="py-2 pr-3">Clean-Energy Score</th>
               <th className="py-2 pr-3">Before</th>
@@ -70,9 +73,21 @@ export default function ReallocationPanel({
               const isDecrease = m.delta < -0.0001;
               return (
                 <tr key={m.ticker} className="border-b border-slate-100 last:border-0">
-                  <td className="py-2 pr-3 font-medium text-navy-900">
-                    {m.ticker}
+                  <td className="py-2 pr-1 font-medium text-navy-900">
+                    <Link href={`/stock/${m.ticker}`} className="hover:text-forest-600 hover:underline">
+                      {m.ticker}
+                    </Link>
                     <div className="text-xs font-normal text-slate-500">{m.name}</div>
+                  </td>
+                  <td className="py-2 pr-3">
+                    {h && (
+                      <StockSparkline
+                        ticker={h.ticker}
+                        avgReturn={h.avgReturn}
+                        volatility={h.volatility}
+                        price={h.price}
+                      />
+                    )}
                   </td>
                   <td className="py-2 pr-3 text-slate-600">{h?.sector ?? "—"}</td>
                   <td className="py-2 pr-3">

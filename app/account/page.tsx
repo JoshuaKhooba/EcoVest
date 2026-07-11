@@ -8,6 +8,7 @@ import GradientBanner from "@/components/GradientBanner";
 import SamplePortfolioModal from "@/components/SamplePortfolioModal";
 import CountUp from "@/components/CountUp";
 import IconChip from "@/components/IconChip";
+import StockSparkline from "@/components/StockSparkline";
 import { sectorIcon, sectorColor } from "@/components/sectorMeta";
 import holdingsData from "@/data/holdings.json";
 import { AccountSummary, Holding } from "@/lib/types";
@@ -93,6 +94,8 @@ export default function AccountPage() {
         name: h?.name ?? p.ticker,
         sector: h?.sector ?? "Other",
         esgScore: h?.esgScore ?? 0,
+        avgReturn: h?.avgReturn ?? 0,
+        volatility: h?.volatility ?? 0.2,
         price,
         value: price * p.shares,
       };
@@ -169,11 +172,24 @@ export default function AccountPage() {
                     <div className="flex items-center gap-3">
                       <IconChip icon={sectorIcon(r.sector)} color={sectorColor(r.sector)} />
                       <div>
-                        <div className="font-semibold text-navy-900">{r.ticker}</div>
+                        <Link
+                          href={`/stock/${r.ticker}`}
+                          className="font-semibold text-navy-900 hover:text-forest-600 hover:underline"
+                        >
+                          {r.ticker}
+                        </Link>
                         <div className="text-xs text-slate-500">{r.name}</div>
                       </div>
                     </div>
                     <span className="badge bg-slate-100 text-slate-600">ESG {r.esgScore}/10</span>
+                  </div>
+                  <div className="mt-3">
+                    <StockSparkline
+                      ticker={r.ticker}
+                      avgReturn={r.avgReturn}
+                      volatility={r.volatility}
+                      price={r.price}
+                    />
                   </div>
                   <div className="mt-4 flex items-end justify-between">
                     <div>

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Header from "@/components/Header";
 import TradeModal from "@/components/TradeModal";
 import IconChip from "@/components/IconChip";
 import CountUp from "@/components/CountUp";
 import { sectorIcon, sectorColor } from "@/components/sectorMeta";
+import StockSparkline from "@/components/StockSparkline";
 import { SparklesIcon } from "@/components/Icons";
 import { isGreenBonusEligible, formatBonusPercent } from "@/lib/bonus";
 import holdingsData from "@/data/holdings.json";
@@ -98,7 +100,12 @@ export default function BrowsePage() {
                       <div className="flex items-center gap-2">
                         <IconChip icon={sectorIcon(h.sector, "h-4 w-4")} color={sectorColor(h.sector)} size="sm" />
                         <div>
-                          <div className="font-semibold text-navy-900">{h.ticker}</div>
+                          <Link
+                            href={`/stock/${h.ticker}`}
+                            className="font-semibold text-navy-900 hover:text-forest-600 hover:underline"
+                          >
+                            {h.ticker}
+                          </Link>
                           <div className="text-xs text-slate-500">{h.sector}</div>
                         </div>
                       </div>
@@ -136,10 +143,11 @@ export default function BrowsePage() {
           className="animate-fade-in-up card overflow-x-auto"
           style={{ animationDelay: "60ms" }}
         >
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[860px] text-sm">
             <thead>
               <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
-                <th className="py-2 pr-3">Ticker</th>
+                <th className="py-2 pr-1">Ticker</th>
+                <th className="py-2 pr-3">Trend</th>
                 <th className="py-2 pr-3">Sector</th>
                 <th className="py-2 pr-3">Price</th>
                 <th className="py-2 pr-3">Clean-Energy Score</th>
@@ -156,14 +164,27 @@ export default function BrowsePage() {
                     className="animate-fade-in-up border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50"
                     style={{ animationDelay: `${100 + i * 25}ms` }}
                   >
-                    <td className="py-2 pr-3 font-medium text-navy-900">
+                    <td className="py-2 pr-1 font-medium text-navy-900">
                       <div className="flex items-center gap-2.5">
                         <IconChip icon={sectorIcon(h.sector, "h-4 w-4")} color={sectorColor(h.sector)} size="sm" />
                         <div>
-                          {h.ticker}
+                          <Link
+                            href={`/stock/${h.ticker}`}
+                            className="hover:text-forest-600 hover:underline"
+                          >
+                            {h.ticker}
+                          </Link>
                           <div className="text-xs font-normal text-slate-500">{h.name}</div>
                         </div>
                       </div>
+                    </td>
+                    <td className="py-2 pr-3">
+                      <StockSparkline
+                        ticker={h.ticker}
+                        avgReturn={h.avgReturn}
+                        volatility={h.volatility}
+                        price={h.price}
+                      />
                     </td>
                     <td className="py-2 pr-3 text-slate-600">{h.sector}</td>
                     <td className="py-2 pr-3">${h.price.toFixed(2)}</td>
