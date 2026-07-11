@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { INTEREST_CATEGORIES } from "@/lib/types";
@@ -49,9 +50,14 @@ export default function ProfilePage() {
 
       <div className="animate-pop-in relative w-full max-w-lg rounded-2xl border border-white/10 bg-white p-8 shadow-xl">
         <div className="mb-6 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-forest-500 text-lg font-bold text-white">
-            E
-          </div>
+          <Image
+            src="/GROWicon.png"
+            alt="GROW icon"
+            width={36}
+            height={36}
+            priority
+            className="h-9 w-9 rounded-lg object-cover"
+          />
           <div className="text-lg font-semibold text-navy-900">EcoVest</div>
         </div>
 

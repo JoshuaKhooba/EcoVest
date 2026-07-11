@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -28,9 +29,14 @@ export default function Header({ authed = false }: HeaderProps) {
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-navy-950 text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
         <Link href={authed ? "/account" : "/"} className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-forest-500 text-lg font-bold">
-            E
-          </div>
+          <Image
+            src="/GROWicon.png"
+            alt="GROW icon"
+            width={36}
+            height={36}
+            priority
+            className="h-9 w-9 rounded-lg object-cover"
+          />
           <div>
             <div className="text-lg font-semibold leading-tight">EcoVest</div>
             <div className="text-xs leading-tight text-slate-300">
