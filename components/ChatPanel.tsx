@@ -125,15 +125,17 @@ export default function ChatPanel() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-violet-600 to-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-150 hover:-translate-y-1 hover:from-violet-500 hover:to-blue-500 hover:shadow-glow-violet active:translate-y-0"
+        aria-label="Ask Gemini about your holdings"
+        className="fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-violet-600 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-150 hover:-translate-y-1 hover:from-violet-500 hover:to-blue-500 hover:shadow-glow-violet active:translate-y-0 sm:bottom-6 sm:right-6 sm:px-5"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
           <path
             d="M12 2 L14.2 9.8 L22 12 L14.2 14.2 L12 22 L9.8 14.2 L2 12 L9.8 9.8 Z"
             fill="currentColor"
           />
         </svg>
-        Ask Gemini about your holdings
+        <span className="sm:hidden">Ask Gemini</span>
+        <span className="hidden sm:inline">Ask Gemini about your holdings</span>
       </button>
 
       {open && (

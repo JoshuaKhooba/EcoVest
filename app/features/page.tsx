@@ -520,8 +520,8 @@ function SearchVisual() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
       <div
-        className={`flex h-10 items-center gap-2 overflow-hidden rounded-lg border border-slate-300 bg-white px-3 shadow-sm transition-all duration-500 ease-out ${
-          expanded ? "w-72" : "w-10 px-0 justify-center"
+        className={`flex h-10 max-w-full items-center gap-2 overflow-hidden rounded-lg border border-slate-300 bg-white px-3 shadow-sm transition-all duration-500 ease-out ${
+          expanded ? "w-64 sm:w-72" : "w-10 px-0 justify-center"
         }`}
       >
         <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4 flex-shrink-0 text-slate-400">
@@ -534,7 +534,7 @@ function SearchVisual() {
       </div>
 
       {expanded && (
-        <div className="animate-fade-in-up w-72 space-y-1.5 rounded-xl bg-white p-2 shadow-card">
+        <div className="animate-fade-in-up w-64 max-w-full space-y-1.5 rounded-xl bg-white p-2 shadow-card sm:w-72">
           <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm hover:bg-slate-50">
             <span className="font-medium text-navy-900">SUNP</span>
             <span className="text-xs text-slate-400">Stock</span>

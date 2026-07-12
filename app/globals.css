@@ -5,6 +5,11 @@
 html,
 body {
   height: 100%;
+  /* Defensive guard against any stray element (decorative blobs, fixed-width
+     mockups, etc.) pushing the page wider than the viewport on small
+     screens — everything on this site is designed to fit without side
+     scroll, so this should never actually get exercised in normal use. */
+  overflow-x: hidden;
 }
 
 body {

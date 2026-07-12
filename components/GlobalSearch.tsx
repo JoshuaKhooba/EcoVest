@@ -148,7 +148,7 @@ export default function GlobalSearch() {
     <div ref={containerRef} className="relative">
       <div
         className={`flex h-9 items-center gap-2 overflow-hidden rounded-lg border border-slate-700 bg-slate-800/60 transition-all duration-300 ease-out ${
-          expanded ? "w-56 px-2.5 sm:w-72" : "w-9 px-0"
+          expanded ? "w-[42vw] max-w-56 px-2.5 sm:w-72 sm:max-w-none" : "w-9 px-0"
         }`}
       >
         <button
@@ -187,7 +187,7 @@ export default function GlobalSearch() {
       </div>
 
       {expanded && (
-        <div className="animate-fade-in-up absolute right-0 top-full z-50 mt-2 max-h-96 w-80 overflow-y-auto rounded-xl bg-white shadow-xl sm:w-96">
+        <div className="animate-fade-in-up absolute right-0 top-full z-50 mt-2 max-h-96 w-[min(20rem,88vw)] overflow-y-auto rounded-xl bg-white shadow-xl sm:w-96">
           {results.length === 0 ? (
             <p className="px-3 py-6 text-center text-sm text-slate-400">
               No matches for &quot;{query}&quot;.
