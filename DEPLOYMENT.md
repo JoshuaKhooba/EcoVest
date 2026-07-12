@@ -28,17 +28,36 @@ tables with no public policies, so the anon key alone can't read or write
 anything — that's intentional, since EcoVest keeps its own email+password
 login (`lib/auth.ts` + `lib/session.ts`) rather than using Supabase Auth.
 
-## 2. Set your local `.env.local`
+## 2. Set up email for password resets (optional but recommended)
+
+The "Forgot password?" link on the login page needs an email provider to
+actually send reset links. EcoVest uses [Resend](https://resend.com):
+
+1. Create a free account at resend.com and generate an API key (**API
+   Keys -> Create API Key**).
+2. Set `RESEND_API_KEY` in `.env.local`.
+3. You can send from Resend's shared `onboarding@resend.dev` address with no
+   setup, though check your Resend dashboard for any sandbox-mode
+   restrictions on recipients — verify your own domain there for
+   unrestricted sending to any user. Once verified, set
+   `RESEND_FROM_EMAIL=EcoVest <noreply@yourdomain.com>`.
+
+Without `RESEND_API_KEY` set, the rest of the app works fine — the
+forgot-password form just returns a clear "not configured yet" error instead
+of silently failing.
+
+## 3. Set your local `.env.local`
 
 Copy `.env.local.example` to `.env.local` and fill in the Supabase values
-from step 1, plus your existing Gemini/Vertex AI values. See that file's
-comments for the Gemini credential options (inline JSON key vs. local file
-path).
+from step 1, plus your existing Gemini/Vertex AI values and the Resend key
+from step 2. See that file's comments for the Gemini credential options
+(inline JSON key vs. local file path).
 
-Run `npm install` (pulls in the new `@supabase/supabase-js` dependency),
-then `npm run dev` and confirm signup/login/trading still work end to end.
+Run `npm install` (pulls in the new `@supabase/supabase-js` and `resend`
+dependencies), then `npm run dev` and confirm signup/login/trading still
+work end to end.
 
-## 3. Deploy to Vercel
+## 4. Deploy to Vercel
 
 1. Push this repo to GitHub if you haven't already (`git push origin main`).
 2. Go to [vercel.com/new](https://vercel.com/new), sign in, and import the
@@ -55,6 +74,8 @@ then `npm run dev` and confirm signup/login/trading still work end to end.
    - `GCP_SERVICE_ACCOUNT_KEY` — paste the full JSON key as one value.
      **Don't** set `GOOGLE_APPLICATION_CREDENTIALS` on Vercel — there's no
      file at that path in a serverless function, so it wouldn't resolve.
+   - `RESEND_API_KEY` (and `RESEND_FROM_EMAIL` if you set one) — for
+     password-reset emails.
    - `AUTH_SECRET` — generate a fresh one for production with
      `openssl rand -base64 32` (don't reuse your local dev value).
 4. Click **Deploy**. Every subsequent `git push origin main` auto-deploys.
@@ -74,3 +95,7 @@ inline Gemini credentials) are in place.
   Vercel has no persistent file to point `GOOGLE_APPLICATION_CREDENTIALS` at.
 - `supabase/schema.sql` — new file, the Postgres schema to run once per
   Supabase project.
+- `lib/email.ts`, `app/api/auth/forgot-password/route.ts`,
+  `app/api/auth/reset-password/route.ts`, `app/forgot-password/page.tsx`,
+  `app/reset-password/page.tsx` — the forgot-password flow, emailing a
+  one-hour, single-use reset link via Resend.

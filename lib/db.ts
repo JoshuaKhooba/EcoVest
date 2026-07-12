@@ -23,6 +23,10 @@ export interface UserRow {
   lastName: string | null;
   /** Raw JSON-encoded array of INTEREST_CATEGORIES strings — parse with JSON.parse. */
   interests: string;
+  /** SHA-256 hex hash of the current forgot-password token, if any is outstanding. Never the raw token. */
+  resetTokenHash: string | null;
+  /** ISO timestamp the outstanding reset token expires at, if any. */
+  resetTokenExpiresAt: string | null;
 }
 
 export async function createUser(email: string, passwordHash: string): Promise<UserRow> {
@@ -75,6 +79,47 @@ export async function updateUserProfile(
   const { error } = await supabaseAdmin
     .from("users")
     .update({ firstName, lastName, interests: JSON.stringify(interests) })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateUserPassword(id: string, passwordHash: string): Promise<void> {
+  const { error } = await supabaseAdmin.from("users").update({ passwordHash }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+// --- Forgot-password reset tokens -----------------------------------------
+// One outstanding token per user (setting a new one overwrites any previous
+// one, so only the most recently requested reset link works). The raw token
+// is only ever held in memory + emailed to the user; only its SHA-256 hash
+// is stored, mirroring the "never store the secret itself" principle used
+// for passwords (bcrypt hash) elsewhere in this file.
+
+export async function setResetToken(
+  id: string,
+  tokenHash: string,
+  expiresAt: Date
+): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("users")
+    .update({ resetTokenHash: tokenHash, resetTokenExpiresAt: expiresAt.toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function getUserByResetTokenHash(tokenHash: string): Promise<UserRow | undefined> {
+  const { data, error } = await supabaseAdmin
+    .from("users")
+    .select("*")
+    .eq("resetTokenHash", tokenHash)
+    .maybeSingle();
+  return unwrap(data as UserRow | null, error);
+}
+
+export async function clearResetToken(id: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("users")
+    .update({ resetTokenHash: null, resetTokenExpiresAt: null })
     .eq("id", id);
   if (error) throw new Error(error.message);
 }

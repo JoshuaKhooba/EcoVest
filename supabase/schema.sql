@@ -37,8 +37,18 @@ create table if not exists "users" (
   -- — kept as plain text (not jsonb) to match the app's existing
   -- JSON.parse/JSON.stringify handling in lib/trade.ts and lib/db.ts.
   "interests" text not null default '[]',
-  "createdAt" timestamptz not null default now()
+  "createdAt" timestamptz not null default now(),
+  -- Forgot-password flow: SHA-256 hash of the current outstanding reset
+  -- token (never the raw token itself — see lib/db.ts) and its expiry.
+  -- Nullable; both are cleared once the token is used or superseded.
+  "resetTokenHash" text,
+  "resetTokenExpiresAt" timestamptz
 );
+
+-- Safe to re-run even if the table above already existed before these two
+-- columns were added — this ALTER is a no-op once they're present.
+alter table "users" add column if not exists "resetTokenHash" text;
+alter table "users" add column if not exists "resetTokenExpiresAt" timestamptz;
 
 create table if not exists "positions" (
   "id" uuid primary key default gen_random_uuid(),

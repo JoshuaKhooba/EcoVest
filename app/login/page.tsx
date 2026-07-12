@@ -80,7 +80,15 @@ function LoginForm() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">Password</label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="block text-xs font-medium text-slate-600">Password</label>
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-forest-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <input
               type="password"
               required

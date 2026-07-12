@@ -20,6 +20,7 @@ Live deployment: see your team's Vercel project URL. Full deploy walkthrough (Su
 10. Gemini API calls generate: (a) plain-English ESG summaries for the 2–3 flagged (trimmed) holdings, based on a mock sustainability report excerpt, and (b) a one-paragraph rationale explaining why the reallocation was suggested.
 11. A chat panel lets you ask Gemini free-form questions about any holding — grounded in the same dataset (sector, score, return, volatility, sustainability notes, and your current position size) shown on the dashboard.
 12. A global search (in the header, once signed in) jumps straight to any page or feature — dashboard, browse, a specific holding, the chat panel, and more.
+13. Forgot your password? The login page has a **Forgot password?** link that emails a one-hour, single-use reset link (via Resend) to set a new one — no security questions, no support ticket.
 
 ## Tech stack
 
@@ -30,6 +31,7 @@ Live deployment: see your team's Vercel project URL. Full deploy walkthrough (Su
 - **Data:** Static JSON dataset of 19 stocks/ETFs/bonds (`data/holdings.json`), each with ticker, name, sector, historical average return, volatility, a 1–10 clean-energy/ESG score, one or more interest tags drawn from the same 7-category list used on the profile page, a mock 2–3 paragraph sustainability report excerpt, and a mock trading price. Price history charts are a deterministic seeded random walk (`lib/priceHistory.ts`), not real market data.
 - **Auth:** A lightweight custom email/password system — bcrypt-hashed passwords, JWT session tokens (`jose`) in an httpOnly cookie, and route protection via Next.js middleware. No NextAuth or Supabase Auth; the whole auth surface lives in two small files (`lib/auth.ts` for password hashing, `lib/session.ts` for the JWT/cookie logic).
 - **Database:** Supabase (hosted Postgres, accessed via `@supabase/supabase-js`). User accounts, positions, and transaction history all live here so the app works the same locally and on Vercel — Vercel's serverless functions have no persistent filesystem, so an earlier `node:sqlite`-based version only worked for local dev. Row Level Security is enabled on every table with **no public policies**; all access goes through the service-role key from server-side API routes only (`lib/supabaseAdmin.ts` → `lib/db.ts`), since the app keeps its own custom auth instead of Supabase Auth. Schema lives in [`supabase/schema.sql`](./supabase/schema.sql).
+- **Email:** [Resend](https://resend.com) (`resend` npm package, `lib/email.ts`) sends the forgot-password reset link. A reset request generates a random token, stores only its SHA-256 hash + a 1-hour expiry on the user row, and emails a link containing the raw token — the same "never store the secret itself" pattern used for passwords.
 
 ## Project structure
 
@@ -40,6 +42,8 @@ app/
   features/page.tsx           Interactive, animated feature showcase
   faq/page.tsx                 Frequently asked questions
   login/, signup/             Auth pages
+  forgot-password/page.tsx    Request a password reset link by email
+  reset-password/page.tsx     Set a new password from an emailed reset token
   profile/page.tsx             One-time "Create Your Profile" onboarding (name + interests)
   account/page.tsx            Cash balance, holdings, Try Sample Portfolio, Green Portfolio APY status
   browse/page.tsx             Sortable buy/sell table, Recommended For You, Watchlist
@@ -48,6 +52,8 @@ app/
   dashboard/page.tsx          Sector/return/risk/reallocation dashboard + chat
   api/
     auth/signup, login, logout    Account creation & session cookie
+    auth/forgot-password/route.ts Generate + email a password reset token
+    auth/reset-password/route.ts  Validate the token and set a new password
     account/route.ts              Current account summary (cash, positions, value, profile)
     profile/route.ts              Save/load first name, last name, interest tags
     trade/route.ts                Manual buy/sell — the core trade execution path
@@ -74,6 +80,7 @@ lib/
   auth.ts                     Password hashing (bcrypt) — Node-only, route handlers only
   session.ts                  JWT sign/verify + cookie helpers — edge-safe, used by middleware too
   gemini.ts                   Gemini (Vertex AI) client wrapper
+  email.ts                    Resend client wrapper — sends the password reset email
 data/
   holdings.json                19 mock stocks/ETFs/bonds with ESG scores, interest tags, excerpts, and prices
   samplePortfolio.json          Pre-built sample portfolio weights
