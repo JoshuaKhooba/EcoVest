@@ -1,10 +1,14 @@
 # EcoVest — Portfolio Greenifier
 
-EcoVest is a simulated stock/ETF trading account that analyzes your portfolio and proposes an explainable reallocation toward clean-energy equities and green bonds, with a full return/risk comparison and Gemini-powered natural-language insights. Built for a hackathon spanning the Bloomberg (FinTech), OneEthos (Clean Energy), and Google Gemini API tracks.
+EcoVest is a simulated stock/ETF trading account that analyzes your portfolio and proposes an explainable reallocation toward clean-energy equities and green bonds, with a full return/risk comparison and Gemini-powered natural-language insights. Built in a single 12-hour hackathon for **BloomKnights**, hosted at the **University of Central Florida**, spanning the Bloomberg (FinTech), OneEthos (Clean Energy), and Google Gemini API tracks.
+
+Our guiding idea is **GROW — Green Return On Wealth**: growing your wealth through returns that also grow a greener economy, rather than asking users to choose between doing good and doing well.
 
 **This is a paper-trading simulation only. There is no real brokerage connection, no real money, and no real order routing anywhere in this app.** Every account starts with $10,000 in simulated cash, every trade fills instantly at a mock listed price, and every screen that shows a balance is labeled as simulated.
 
-Live deployment: see your team's Vercel project URL. Full deploy walkthrough (Supabase setup + Vercel env vars) is in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+- Live deployment: [eco-vest-nine.vercel.app](https://eco-vest-nine.vercel.app/)
+- Devpost writeup: [devpost.com/software/ecovest-7w2bzi](https://devpost.com/software/ecovest-7w2bzi)
+- Full deploy walkthrough (Supabase setup + Vercel env vars): [`DEPLOYMENT.md`](./DEPLOYMENT.md)
 
 ## Concept
 
@@ -143,3 +147,19 @@ A small, Robinhood-style incentive layered on top of the core simulation: buying
 ## Green Portfolio APY
 
 A second, portfolio-level incentive on top of the per-trade bonus: once at least 80% of your holdings' total value is in stocks/ETFs scoring 8+/10 on clean-energy (`GREEN_APY_MIN_SHARE`/`GREEN_APY_MIN_SCORE` in `lib/apy.ts`), the account becomes eligible for a simulated **4.50% APY** (`GREEN_APY_RATE`) — rewarding sustained green allocation, not just individual green purchases. Eligibility is computed live from your current positions and the dataset's ESG scores (`computeGreenApyStatus()`), and surfaced in two places: a banner on the Account page (showing your current green share and progress toward 80% if you haven't hit it yet, or a celebratory eligible state if you have) and a dedicated section on the landing page advertising the incentive to signed-out visitors. Like the buy bonus, this is simulated only — no real yield is paid on any real asset.
+
+## What's next
+
+Ideas from our Devpost writeup for where EcoVest could go beyond the hackathon build:
+
+- A larger, more frequently updated investment dataset beyond the current 19 modeled stocks/ETFs
+- Historical portfolio-performance charts and more detailed risk/volatility analytics
+- Stronger ESG and clean-energy data sourced from verified providers, not a mock dataset
+- Custom portfolio goals and risk tolerances per user
+- More advanced reallocation strategies beyond the current quartile-based model
+- Gemini explanations that cite the underlying financial and sustainability data directly
+- Portfolio comparison and scenario-testing tools
+- Short educational lessons about sustainable investing, built into the app
+- More portfolio controls — resetting, saving, and comparing multiple simulated portfolios
+
+Long term, the goal is for EcoVest to grow from a hackathon simulation into a full educational platform for understanding how financial returns and sustainability can work together.
